@@ -1,3 +1,5 @@
+from math import ceil
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
@@ -40,16 +42,48 @@ def login():
 @app.route('/admin')
 def admin():
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
+        # Pagination pour les cours
+        page_cours = request.args.get('page_cours', 1, type=int)
+        per_page = 5  # Nombre d'éléments par page
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM Cours')
+        cursor.execute('SELECT COUNT(*) AS total FROM Cours')
+        total_cours = cursor.fetchone()['total']
+        total_pages_cours = ceil(total_cours / per_page)
+        offset_cours = (page_cours - 1) * per_page
+        cursor.execute('SELECT * FROM Cours LIMIT %s OFFSET %s', (per_page, offset_cours))
         cours = cursor.fetchall()
-        cursor.execute('SELECT * FROM Enseignant')
+
+        # Pagination pour les enseignants
+        page_enseignants = request.args.get('page_enseignants', 1, type=int)
+        #cursor.execute('SELECT COUNT(*) AS total FROM Utilisateur WHERE type_utilisateur = secretaire')
+        cursor.execute('SELECT COUNT(*) AS total FROM Enseignant')
+        total_enseignants = cursor.fetchone()['total']
+        total_pages_enseignants = ceil(total_enseignants / per_page)
+        offset_enseignants = (page_enseignants - 1) * per_page
+        #cursor.execute('SELECT * FROM Utilisateur WHERE type_utilisateur = secretaire LIMIT %s OFFSET %s', (per_page, offset_enseignants))
+        cursor.execute('SELECT * FROM Enseignant LIMIT %s OFFSET %s', (per_page, offset_enseignants))
         enseignants = cursor.fetchall()
-        cursor.execute('SELECT * FROM CoursSemestriel')
+
+        # Pagination pour les cours semestriels
+        page_cours_semestriels = request.args.get('page_cours_semestriels', 1, type=int)
+        cursor.execute('SELECT COUNT(*) AS total FROM CoursSemestriel')
+        total_cours_semestriels = cursor.fetchone()['total']
+        total_pages_cours_semestriels = ceil(total_cours_semestriels / per_page)
+        offset_cours_semestriels = (page_cours_semestriels - 1) * per_page
+        cursor.execute('SELECT * FROM CoursSemestriel LIMIT %s OFFSET %s', (per_page, offset_cours_semestriels))
         cours_semestriels = cursor.fetchall()
-        return render_template('admin.html', cours=cours, enseignants=enseignants, cours_semestriels=cours_semestriels)
+
+        cursor.close()
+
+        return render_template(
+            'admin.html',
+            cours=cours, page_cours=page_cours, total_pages_cours=total_pages_cours,
+            enseignants=enseignants, page_enseignants=page_enseignants, total_pages_enseignants=total_pages_enseignants,
+            cours_semestriels=cours_semestriels, page_cours_semestriels=page_cours_semestriels, total_pages_cours_semestriels=total_pages_cours_semestriels
+        )
     else:
         return redirect(url_for('login'))
+
 
 # Page enseignant
 @app.route('/teacher')
@@ -76,6 +110,60 @@ def student():
         return render_template('student.html', inscriptions=inscriptions, notes=notes)
     else:
         return redirect(url_for('login'))
+
+# Route pour ajouter un cours
+@app.route('/add_cours', methods=['POST'])
+def add_cours():
+    if request.method == 'POST':
+        titre = request.form['titre']
+        description = request.form['description']
+        heures = request.form['heures']
+        type_cours = request.form['type_cours']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO Cours (titre, description, heures, type_cours) VALUES (%s, %s, %s, %s)', (titre, description, heures, type_cours))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Cours ajouté avec succès', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/add_enseignant', methods=['POST'])
+def add_enseignant():
+    if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
+        nom = request.form['nom']
+        prenom = request.form['prenom']
+        fonction = request.form['fonction']
+        telephone = request.form['telephone']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO Enseignant (nom, prenom, fonction, telephone) VALUES (%s, %s, %s, %s)', (nom, prenom, fonction, telephone))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Enseignant ajouté avec succès', 'success')
+    return redirect(url_for('admin'))
+
+# Route pour supprimer un cours
+@app.route('/delete_cours/<int:id>', methods=['GET'])
+def delete_cours(id):
+    if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM Cours WHERE id = %s', (id,))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Cours supprimé avec succès', 'success')
+    return redirect(url_for('admin'))
+
+@app.route('/add_cours_semestriel', methods=['POST'])
+def add_cours_semestriel():
+    if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
+        id_cours = request.form['id_cours']
+        id_enseignant = request.form['id_enseignant']
+        semestre = request.form['semestre']
+        annee = request.form['annee']
+        cursor = mysql.connection.cursor()
+        cursor.execute('INSERT INTO CoursSemestriel (id_cours, id_enseignant, semestre, annee) VALUES (%s, %s, %s, %s)', (id_cours, id_enseignant, semestre, annee))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Cours semestriel ajouté avec succès', 'success')
+    return redirect(url_for('admin'))
 
 # Déconnexion
 @app.route('/logout')

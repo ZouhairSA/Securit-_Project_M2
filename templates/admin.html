@@ -1,76 +1,204 @@
 {% extends "base.html" %}
 {% block content %}
-<h2 class="mb-4">Administration</h2>
+<div class="container mt-4">
+    <h2 class="mb-4">Interface Secrétaire</h2>
 
-<h3>Cours</h3>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Titre</th>
-            <th>Description</th>
-            <th>Heures</th>
-            <th>Type</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cours in cours %}
-        <tr>
-            <td>{{ cours.id }}</td>
-            <td>{{ cours.titre }}</td>
-            <td>{{ cours.description }}</td>
-            <td>{{ cours.heures }}</td>
-            <td>{{ cours.type_cours }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <!-- Section Cours -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Liste des Cours</h5>
+            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addCoursModal">
+                <i class="fas fa-plus"></i> Ajouter
+            </button>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Titre</th>
+                        <th>Description</th>
+                        <th>Heures</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cours in cours %}
+                    <tr>
+                        <td>{{ cours.id }}</td>
+                        <td>{{ cours.titre }}</td>
+                        <td>{{ cours.description }}</td>
+                        <td>{{ cours.heures }}</td>
+                        <td>{{ cours.type_cours }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCoursModal{{ cours.id }}">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCoursModal{{ cours.id }}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
 
-<h3>Enseignants</h3>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Nom</th>
-            <th>Prénom</th>
-            <th>Fonction</th>
-            <th>Téléphone</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for enseignant in enseignants %}
-        <tr>
-            <td>{{ enseignant.id }}</td>
-            <td>{{ enseignant.nom }}</td>
-            <td>{{ enseignant.prenom }}</td>
-            <td>{{ enseignant.fonction }}</td>
-            <td>{{ enseignant.telephone }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+            <!-- Pagination pour les Cours -->
+        <nav aria-label="Page navigation for Cours">
+            <ul class="pagination justify-content-center">
+                {% if page_cours > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin', page_cours=page_cours-1, page_enseignants=page_enseignants, page_cours_semestriels=page_cours_semestriels) }}">Précédent</a>
+                </li>
+                {% endif %}
+                {% for p in range(1, total_pages_cours + 1) %}
+                <li class="page-item {% if p == page_cours %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin', page_cours=p, page_enseignants=page_enseignants, page_cours_semestriels=page_cours_semestriels) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                {% if page_cours < total_pages_cours %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin', page_cours=page_cours+1, page_enseignants=page_enseignants, page_cours_semestriels=page_cours_semestriels) }}">Suivant</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
 
-<h3>Cours Semestriels</h3>
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Cours</th>
-            <th>Enseignant</th>
-            <th>Semestre</th>
-            <th>Année</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for cs in cours_semestriels %}
-        <tr>
-            <td>{{ cs.id }}</td>
-            <td>{{ cs.id_cours }}</td>
-            <td>{{ cs.id_enseignant }}</td>
-            <td>{{ cs.semestre }}</td>
-            <td>{{ cs.annee }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+        </div>
+    </div>
+
+    <!-- Section Enseignants -->
+    <div class="card mb-4">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Liste des Enseignants</h5>
+            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addEnseignantModal">
+                <i class="fas fa-plus"></i> Ajouter
+            </button>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Fonction</th>
+                        <th>Téléphone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for enseignant in enseignants %}
+                    <tr>
+                        <td>{{ enseignant.id }}</td>
+                        <td>{{ enseignant.nom }}</td>
+                        <td>{{ enseignant.prenom }}</td>
+                        <td>{{ enseignant.fonction }}</td>
+                        <td>{{ enseignant.telephone }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editEnseignantModal{{ enseignant.id }}">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteEnseignantModal{{ enseignant.id }}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+             <!-- Pagination pour les Enseignants -->
+        <nav aria-label="Page navigation for Enseignants">
+            <ul class="pagination justify-content-center">
+                {% if page_enseignants > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin', page_enseignants=page_enseignants-1, page_cours=page_cours, page_cours_semestriels=page_cours_semestriels) }}">Précédent</a>
+                </li>
+                {% endif %}
+                {% for p in range(1, total_pages_enseignants + 1) %}
+                <li class="page-item {% if p == page_enseignants %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin', page_enseignants=p, page_cours=page_cours, page_cours_semestriels=page_cours_semestriels) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                {% if page_enseignants < total_pages_enseignants %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin', page_enseignants=page_enseignants+1, page_cours=page_cours, page_cours_semestriels=page_cours_semestriels) }}">Suivant</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        </div>
+    </div>
+
+    <!-- Section Cours Semestriels -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Liste des Cours Semestriels</h5>
+            <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addCoursSemestrielModal">
+                <i class="fas fa-plus"></i> Ajouter
+            </button>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Cours</th>
+                        <th>Enseignant</th>
+                        <th>Semestre</th>
+                        <th>Année</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cs in cours_semestriels %}
+                    <tr>
+                        <td>{{ cs.id }}</td>
+                        <td>{{ cs.id_cours }}</td>
+                        <td>{{ cs.id_enseignant }}</td>
+                        <td>{{ cs.semestre }}</td>
+                        <td>{{ cs.annee }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editCoursSemestrielModal{{ cs.id }}">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCoursSemestrielModal{{ cs.id }}">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Pagination pour les Cours Semestriels -->
+        <nav aria-label="Page navigation for Cours Semestriels">
+            <ul class="pagination justify-content-center">
+                {% if page_cours_semestriels > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin', page_cours_semestriels=page_cours_semestriels-1, page_cours=page_cours, page_enseignants=page_enseignants) }}">Précédent</a>
+                </li>
+                {% endif %}
+                {% for p in range(1, total_pages_cours_semestriels + 1) %}
+                <li class="page-item {% if p == page_cours_semestriels %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('admin', page_cours_semestriels=p, page_cours=page_cours, page_enseignants=page_enseignants) }}">{{ p }}</a>
+                </li>
+                {% endfor %}
+                {% if page_cours_semestriels < total_pages_cours_semestriels %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin', page_cours_semestriels=page_cours_semestriels+1, page_cours=page_cours, page_enseignants=page_enseignants) }}">Suivant</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modals pour Ajouter, Modifier et Supprimer -->
+{% include 'modals.html' %}
+
 {% endblock %}

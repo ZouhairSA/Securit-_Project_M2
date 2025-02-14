@@ -1,0 +1,137 @@
+<!-- Modal pour Ajouter un Cours -->
+<div class="modal fade" id="addCoursModal" tabindex="-1" aria-labelledby="addCoursModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCoursModalLabel">Ajouter un Cours</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('add_cours') }}">
+                    <div class="mb-3">
+                        <label for="titre" class="form-label">Titre</label>
+                        <input type="text" class="form-control" id="titre" name="titre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="heures" class="form-label">Heures</label>
+                        <input type="number" class="form-control" id="heures" name="heures" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="type_cours" class="form-label">Type de Cours</label>
+                        <select class="form-control" id="type_cours" name="type_cours" required>
+                            <option value="CM">CM</option>
+                            <option value="TP">TP</option>
+                            <option value="TD">TD</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour Supprimer un Cours -->
+{% for cours in cours %}
+<!-- Modal pour Supprimer un Cours -->
+<div class="modal fade" id="deleteCoursModal{{ cours.id }}" tabindex="-1" aria-labelledby="deleteCoursModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteCoursModalLabel">Supprimer un Cours</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir supprimer le cours "{{ cours.titre }}" ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <a href="{{ url_for('delete_cours', id=cours.id) }}" class="btn btn-danger">Supprimer</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Modal pour Ajouter un Enseignant -->
+<div class="modal fade" id="addEnseignantModal" tabindex="-1" aria-labelledby="addEnseignantModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addEnseignantModalLabel">Ajouter un Enseignant</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('add_enseignant') }}">
+                    <div class="mb-3">
+                        <label for="nom" class="form-label">Nom</label>
+                        <input type="text" class="form-control" id="nom" name="nom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="prenom" class="form-label">Prénom</label>
+                        <input type="text" class="form-control" id="prenom" name="prenom" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fonction" class="form-label">Fonction</label>
+                        <select class="form-control" id="fonction" name="fonction" required>
+                            <option value="Vacataire">Vacataire</option>
+                            <option value="ATER">ATER</option>
+                            <option value="MdC">MdC</option>
+                            <option value="Professeur">Professeur</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telephone" class="form-label">Téléphone</label>
+                        <input type="text" class="form-control" id="telephone" name="telephone" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pour Ajouter un Cours Semestriel -->
+<div class="modal fade" id="addCoursSemestrielModal" tabindex="-1" aria-labelledby="addCoursSemestrielModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCoursSemestrielModalLabel">Ajouter un Cours Semestriel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('add_cours_semestriel') }}">
+                    <div class="mb-3">
+                        <label for="id_cours" class="form-label">Cours</label>
+                        <select class="form-control" id="id_cours" name="id_cours" required>
+                            {% for cours in cours %}
+                            <option value="{{ cours.id }}">{{ cours.titre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_enseignant" class="form-label">Enseignant</label>
+                        <select class="form-control" id="id_enseignant" name="id_enseignant" required>
+                            {% for enseignant in enseignants %}
+                            <option value="{{ enseignant.id }}">{{ enseignant.nom }} {{ enseignant.prenom }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="semestre" class="form-label">Semestre</label>
+                        <input type="number" class="form-control" id="semestre" name="semestre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="annee" class="form-label">Année</label>
+                        <input type="number" class="form-control" id="annee" name="annee" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

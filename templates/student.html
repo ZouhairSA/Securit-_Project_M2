@@ -1,37 +1,58 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>Étudiant</h2>
-<h3>Inscriptions</h3>
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Cours</th>
-        <th>Date d'inscription</th>
-    </tr>
-    {% for inscription in inscriptions %}
-    <tr>
-        <td>{{ inscription.id }}</td>
-        <td>{{ inscription.id_cours_semestriel }}</td>
-        <td>{{ inscription.date_inscription }}</td>
-    </tr>
-    {% endfor %}
-</table>
+<div class="container mt-4">
+    <h2 class="mb-4">Interface Étudiant</h2>
 
-<h3>Notes</h3>
-<table>
-    <tr>
-        <th>ID</th>
-        <th>Cours</th>
-        <th>Note</th>
-        <th>Explication</th>
-    </tr>
-    {% for note in notes %}
-    <tr>
-        <td>{{ note.id }}</td>
-        <td>{{ note.id_cours_semestriel }}</td>
-        <td>{{ note.note }}</td>
-        <td>{{ note.explication }}</td>
-    </tr>
-    {% endfor %}
-</table>
+    <!-- Section Inscriptions -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning text-white">
+            <h5 class="card-title mb-0">Mes Inscriptions</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Cours</th>
+                        <th>Date d'Inscription</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inscription in inscriptions %}
+                    <tr>
+                        <td>{{ inscription.id_cours_semestriel }}</td>
+                        <td>{{ inscription.date_inscription }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Section Notes -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="card-title mb-0">Mes Notes</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID Cours</th>
+                        <th>Note</th>
+                        <th>Explication</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for note in notes %}
+                    <tr>
+                        <td>{{ note.id_cours_semestriel }}</td>
+                        <td>{{ note.note }}</td>
+                        <td>{{ note.explication }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}
