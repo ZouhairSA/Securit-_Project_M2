@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Étudiant</h2>
+<h3>Inscriptions</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Cours</th>
+        <th>Date d'inscription</th>
+    </tr>
+    {% for inscription in inscriptions %}
+    <tr>
+        <td>{{ inscription.id }}</td>
+        <td>{{ inscription.id_cours_semestriel }}</td>
+        <td>{{ inscription.date_inscription }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Notes</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Cours</th>
+        <th>Note</th>
+        <th>Explication</th>
+    </tr>
+    {% for note in notes %}
+    <tr>
+        <td>{{ note.id }}</td>
+        <td>{{ note.id_cours_semestriel }}</td>
+        <td>{{ note.note }}</td>
+        <td>{{ note.explication }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

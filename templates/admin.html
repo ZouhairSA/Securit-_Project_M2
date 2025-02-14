@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<h2 class="mb-4">Administration</h2>
+
+<h3>Cours</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Titre</th>
+            <th>Description</th>
+            <th>Heures</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cours in cours %}
+        <tr>
+            <td>{{ cours.id }}</td>
+            <td>{{ cours.titre }}</td>
+            <td>{{ cours.description }}</td>
+            <td>{{ cours.heures }}</td>
+            <td>{{ cours.type_cours }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Enseignants</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Fonction</th>
+            <th>Téléphone</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for enseignant in enseignants %}
+        <tr>
+            <td>{{ enseignant.id }}</td>
+            <td>{{ enseignant.nom }}</td>
+            <td>{{ enseignant.prenom }}</td>
+            <td>{{ enseignant.fonction }}</td>
+            <td>{{ enseignant.telephone }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3>Cours Semestriels</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Cours</th>
+            <th>Enseignant</th>
+            <th>Semestre</th>
+            <th>Année</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cs in cours_semestriels %}
+        <tr>
+            <td>{{ cs.id }}</td>
+            <td>{{ cs.id_cours }}</td>
+            <td>{{ cs.id_enseignant }}</td>
+            <td>{{ cs.semestre }}</td>
+            <td>{{ cs.annee }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

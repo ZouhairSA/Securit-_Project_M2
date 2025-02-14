@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Enseignant</h2>
+<h3>Séances</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Cours</th>
+        <th>Durée</th>
+        <th>Description</th>
+        <th>Salle</th>
+        <th>Date</th>
+    </tr>
+    {% for seance in seances %}
+    <tr>
+        <td>{{ seance.id }}</td>
+        <td>{{ seance.id_cours_semestriel }}</td>
+        <td>{{ seance.duree }}</td>
+        <td>{{ seance.description }}</td>
+        <td>{{ seance.salle }}</td>
+        <td>{{ seance.date_seance }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h3>Notes</h3>
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Élève</th>
+        <th>Cours</th>
+        <th>Note</th>
+        <th>Explication</th>
+    </tr>
+    {% for note in notes %}
+    <tr>
+        <td>{{ note.id }}</td>
+        <td>{{ note.id_eleve }}</td>
+        <td>{{ note.id_cours_semestriel }}</td>
+        <td>{{ note.note }}</td>
+        <td>{{ note.explication }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}
