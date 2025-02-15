@@ -168,6 +168,28 @@ def add_cours_semestriel():
         flash('Cours semestriel ajouté avec succès', 'success')
     return redirect(url_for('admin'))
 
+# Route pour changer le mot de passe
+@app.route('/change_password', methods=['GET', 'POST'])
+def change_password():
+    if 'loggedin' in session:
+        if request.method == 'POST':
+            old_password = request.form['old_password']
+            new_password = request.form['new_password']
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+            cursor.execute('SELECT * FROM utilisateur WHERE id = %s', (session['id'],))
+            user = cursor.fetchone()
+
+            if user and user['mot_de_passe'] == old_password:
+                cursor.execute('UPDATE Utilisateur SET mot_de_passe = %s WHERE id = %s', (new_password, session['id']))
+                mysql.connection.commit()
+                flash('Mot de passe modifié avec succès', 'success')
+                return redirect(url_for('login'))
+            else:
+                flash('Mot de passe actuel incorrect', 'danger')
+        return render_template('change_password.html')
+    else:
+        return redirect(url_for('login'))
+
 # Déconnexion
 @app.route('/logout')
 def logout():
