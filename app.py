@@ -14,11 +14,14 @@ app.config['MYSQL_PASSWORD'] = ''
 app.config['MYSQL_DB'] = 'universite_db'
 
 mysql = MySQL(app)
+# Route pour la page d'accueil
+#@app.route('/')
+#def index():
+# return render_template('index.html')
 
-@app.route('/', methods=['GET', 'POST'])  # Autoriser GET et POST
+@app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        # Traitement du formulaire de connexion
         email = request.form['email']
         password = request.form['password']
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
@@ -36,7 +39,7 @@ def login():
                 return redirect(url_for('student'))
         else:
             flash('Email ou mot de passe incorrect', 'danger')
-    return render_template('login.html')  # Afficher le formulaire de connexion pour les requêtes GET
+    return render_template('login.html')
 
 # Page admin (secrétaire)
 @app.route('/admin')
@@ -168,9 +171,11 @@ def add_cours_semestriel():
 # Déconnexion
 @app.route('/logout')
 def logout():
+    # Effacer les données de session
     session.pop('loggedin', None)
     session.pop('id', None)
     session.pop('type_utilisateur', None)
+    # Rediriger vers la page de connexion
     return redirect(url_for('login'))
 
 if __name__ == '__main__':

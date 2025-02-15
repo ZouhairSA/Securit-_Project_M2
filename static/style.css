@@ -69,3 +69,27 @@ header {
 .table th, .table td {
     vertical-align: middle;
 }
+/* Style pour la NavBar */
+.navbar-brand i {
+    font-size: 1.5rem;
+    margin-right: 10px;
+}
+
+/* Style pour les sections */
+section {
+    padding: 60px 0;
+}
+
+/* Style pour le Footer */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+}
+
+
+.nav-link .bg-success {
+    width: 10px;
+    height: 10px;
+    background-color: #28a745; /* Vert Bootstrap */
+}

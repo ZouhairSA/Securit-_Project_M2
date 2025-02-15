@@ -11,6 +11,7 @@
                 <i class="fas fa-plus"></i> Ajouter
             </button>
         </div>
+
         <div class="card-body">
             <table class="table table-striped">
                 <thead>
@@ -196,6 +197,36 @@
 
         </div>
     </div>
+
+    <!-- Section Messages de contact -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="card-title mb-0">Messages de Contact</h5>
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Prénom</th>
+                        <th>Email</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for message in messages %}
+                    <tr>
+                        <td>{{ message.nom }}</td>
+                        <td>{{ message.prenom }}</td>
+                        <td>{{ message.email }}</td>
+                        <td>{{ message.message }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
 <!-- Modals pour Ajouter, Modifier et Supprimer -->

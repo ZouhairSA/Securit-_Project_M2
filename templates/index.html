@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZOHAIR-HESTIM</title>
+    <title>Université App</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome pour les icônes -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- Font Awesome pour les icônes -->
     <style>
         /* Couleurs de HESTIM */
             :root {
@@ -30,48 +28,8 @@
 
             footer a:hover {
                 color: var(--hestim-orange) !important; /* Couleur orange au survol */
-}
-        /* Animation de couleur en douceur */
-        @keyframes smoothColorChange {
-            0% { background-color: #f8f9fa; } /* Couleur de départ (clair) */
-            25% { background-color: #e9ecef; } /* Nuance légèrement plus foncée */
-            50% { background-color: #dee2e6; } /* Nuance encore plus foncée */
-            75% { background-color: #e9ecef; } /* Retour à une nuance intermédiaire */
-            100% { background-color: #f8f9fa; } /* Retour à la couleur de départ */
         }
-
-        /* Appliquer l'animation au ticker */
-        #infoTicker {
-            animation: smoothColorChange 10s linear infinite; /* Animation de 10 secondes en boucle */
-            border-bottom: 2px solid #e9ecef; /* Bordure en bas */
-            height: 40px; /* Hauteur courte */
-            overflow: hidden; /* Masquer le contenu qui dépasse */
-            position: relative;
-        }
-
-        #tickerContent {
-            position: relative;
-            animation: tickerAnimation 12s linear infinite; /* Animation de défilement */
-        }
-
-        .ticker-item {
-            font-size: 0.9rem; /* Taille de police réduite */
-            color: #333; /* Couleur du texte */
-            height: 40px; /* Hauteur de chaque élément */
-            display: flex;
-            align-items: center; /* Centrer verticalement le texte */
-            justify-content: center; /* Centrer horizontalement le texte */
-        }
-
-        /* Animation de défilement vertical */
-        @keyframes tickerAnimation {
-            0% { transform: translateY(0); }
-            25% { transform: translateY(-10%); }
-            50% { transform: translateY(-20%); }
-            75% { transform: translateY(-30%); }
-            100% { transform: translateY(0); }
-        }
-        /* Couleurs personnalisées pour HESTIM */
+                /* Couleurs personnalisées pour HESTIM */
         :root {
             --hestim-blue: #003366;
             --hestim-orange: #FF6600;
@@ -122,7 +80,6 @@
             transform: translateY(-50%);
             margin-left: 5px;
         }
-
                 /* Animation fade-in-up */
         @keyframes fadeInUp {
             from {
@@ -148,83 +105,58 @@
         .animate-fade-in-up:nth-child(4) { animation-delay: 0.8s; }
         .animate-fade-in-up:nth-child(5) { animation-delay: 1s; }
     </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
     <!-- NavBar -->
-     <!-- Barre de navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <i class="fas fa-graduation-cap me-2"></i>
-                <span class="fw-bold">HESTIM</span>
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    {% if session['loggedin'] %}
-                        <!-- Afficher "Déconnexion" avec une icône et un point orange si l'utilisateur est connecté -->
-                        <li class="nav-item">
-                            <a class="nav-link text-white position-relative" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
-                                <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
-                                <span class="bg-success"></span>
-                            </a>
-                        </li>
-                    {% else %}
-                        <!-- Afficher "Connexion" avec une icône et un point orange si l'utilisateur est connecté -->
-                        <li class="nav-item">
-                            <a class="nav-link text-white position-relative" href="#lg">
-                                <i class="fas fa-sign-in-alt me-2"></i>Connexion
-                                {% if session['loggedin'] %}
-                                    <span class="bg-success"></span>
-                                {% endif %}
-                            </a>
-                        </li>
-                    {% endif %}
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#info">Info</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-white" href="#contact">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+   <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+    <div class="container">
+        <!-- Logo et nom de HESTIM -->
+        <a class="navbar-brand d-flex align-items-center">
+            <i class="fas fa-graduation-cap me-2"></i>
+            <span class="fw-bold">HESTIM</span>
+        </a>
 
-    <!-- Modal de confirmation de déconnexion -->
-    <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="logoutModalLabel">Confirmer la déconnexion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                </div>
-                <div class="modal-body">
-                    Êtes-vous sûr de vouloir vous déconnecter ?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                    <a href="{{ url_for('logout') }}" class="btn btn-danger">Déconnecter</a>
-                </div>
-            </div>
+        <!-- Bouton pour le menu responsive -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Liens de navigation -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                {% if session['loggedin'] %}
+                    <!-- Afficher "Déconnexion" avec une icône et un point orange si l'utilisateur est connecté -->
+                    <li class="nav-item">
+                        <a class="nav-link text-white position-relative" href="{{ url_for('logout') }}">
+                            <i class="fas fa-sign-out-alt me-2"></i>Déconnexion
+                            <span class="bg-success"></span>
+                        </a>
+                    </li>
+                {% else %}
+                    <!-- Afficher "Connexion" avec une icône et un point orange si l'utilisateur est connecté -->
+                    <li class="nav-item">
+                        <a class="nav-link text-white position-relative" href="#lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Connexion
+                            {% if session['loggedin'] %}
+                                <span class="bg-success"></span>
+                            {% endif %}
+                        </a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#info">Info</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#contact">Contact</a>
+                </li>
+            </ul>
         </div>
     </div>
-    <!-- Ticker d'information vertical -->
-    <div id="infoTicker" class="bg-light py-2">
-        <div class="container">
-            <div id="tickerContent" class="text-center overflow-hidden" style="height: 40px;">
-                <!-- Liste des textes -->
-                <div class="ticker-item">Événement : Journée portes ouvertes le 25 octobre 2023.</div>
-                <div class="ticker-item">Nouveau : Inscriptions ouvertes pour le semestre de printemps.</div>
-                <div class="ticker-item">Attention : Maintenance prévue le 30 octobre à 22h.</div>
-                <div class="ticker-item">Bourse d'études disponible pour les étudiants méritants.</div>
-            </div>
-        </div>
-    </div>
-    <main>
-        {% block content %}{% endblock %}
+</nav>
+
+    <!-- Contenu principal -->
+    <main class="mt-5 pt-4">
         <!-- Section À propos -->
         <section id="info" class="py-5 bg-light">
             <div class="container">
@@ -276,6 +208,11 @@
             </div>
         </section>
 
+        <section id="lg" class="py-5 bg-light">
+            <div class="container">
+{% block content %}{% endblock %}
+                </div>
+        </section>
         <!-- Section Contact -->
         <section id="contact" class="py-5">
             <div class="container">
@@ -306,7 +243,7 @@
     </main>
 
     <!-- Footer -->
-   <footer class="text-white py-3">
+    <footer class="text-white py-3">
         <div class="container">
             <div class="row align-items-center">
                 <!-- Copyright -->
@@ -332,31 +269,8 @@
             </div>
         </div>
     </footer>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-            // Liste des textes à afficher
-            const tickerTexts = [
-        "📅 Événement : Journée portes ouvertes le 25 octobre 2023.",
-        "📢 Nouveau : Inscriptions ouvertes pour le semestre de printemps.",
-        "⚠️ Attention : Maintenance prévue le 30 octobre à 22h.",
-        "🎓 Bourse d'études disponible pour les étudiants méritants."
-    ];
-
-            let currentIndex = 0; // Index du texte actuel
-            const tickerContent = document.getElementById("tickerContent"); // Élément du ticker
-
-            // Fonction pour changer le texte
-            function changeTickerText() {
-                tickerContent.textContent = tickerTexts[currentIndex]; // Afficher le texte actuel
-                currentIndex = (currentIndex + 1) % tickerTexts.length; // Passer au texte suivant
-            }
-
-            // Changer le texte toutes les 3 secondes
-            setInterval(changeTickerText, 3000);
-
-            // Afficher le premier texte immédiatement
-            changeTickerText();
-        </script>
 </body>
 </html>
