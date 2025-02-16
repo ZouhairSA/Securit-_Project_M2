@@ -180,3 +180,7 @@ def logout():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+# ('sabyoud', 'zohair', 'zohair@gmail.com', 'password123', 'secretaire'),
+# ('Boussif', 'Youssef', 'youssef.boussif@gmail.com', 'password123', 'enseignant'),
+# ('AA', 'Fatima', 'fatima.aitbenhassi@gmail.com', 'password123', 'eleve'),
