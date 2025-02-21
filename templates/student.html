@@ -1,7 +1,18 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Interface Étudiant</h2>
+    <h2 class="mb-4 text-center">Interface Étudiant - {{ etudiant.prenom }} {{ etudiant.nom }}</h2>
+
+
+    <!-- Section Moyenne -->
+    <div class="card mb-4">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">Ma Moyenne</h5>
+        </div>
+        <div class="card-body">
+            <p class="lead">Votre moyenne est de : <strong>{{ moyenne }}</strong></p>
+        </div>
+    </div>
 
     <!-- Section Inscriptions -->
     <div class="card mb-4">
@@ -9,22 +20,30 @@
             <h5 class="card-title mb-0">Mes Inscriptions</h5>
         </div>
         <div class="card-body">
+            {% if inscriptions %}
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID Cours</th>
-                        <th>Date d'Inscription</th>
+                        <th>Titre du Cours</th>
+                        <th>Enseignant</th>
+                        <th>Date d'inscription au cours</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for inscription in inscriptions %}
                     <tr>
-                        <td>{{ inscription.id_cours_semestriel }}</td>
+                        <td>{{ inscription.titre }}</td>
+                        <td>{{ inscription.nom_enseignant }} {{ inscription.prenom_enseignant }}</td>
                         <td>{{ inscription.date_inscription }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                Vous n'êtes inscrit à aucun cours pour le moment.
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -34,10 +53,11 @@
             <h5 class="card-title mb-0">Mes Notes</h5>
         </div>
         <div class="card-body">
+            {% if notes %}
             <table class="table table-striped">
                 <thead>
                     <tr>
-                        <th>ID Cours</th>
+                        <th>Titre du Cours</th>
                         <th>Note</th>
                         <th>Explication</th>
                     </tr>
@@ -45,13 +65,24 @@
                 <tbody>
                     {% for note in notes %}
                     <tr>
-                        <td>{{ note.id_cours_semestriel }}</td>
-                        <td>{{ note.note }}</td>
+                        <td>{{ note.titre }}</td>
+                        <td>
+                            {% if note.note >= 10 %}
+                                <span class="badge bg-success">{{ note.note }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ note.note }}</span>
+                            {% endif %}
+                        </td>
                         <td>{{ note.explication }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                Vous n'avez pas encore de notes.
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

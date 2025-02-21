@@ -3,6 +3,7 @@ from math import ceil
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mysqldb import MySQL
 import MySQLdb.cursors
+from flask import request
 
 app = Flask(__name__)
 app.secret_key = 'votre_clé_secrète'
@@ -41,7 +42,8 @@ def login():
             flash('Email ou mot de passe incorrect', 'danger')
     return render_template('login.html')
 
-# Page admin (secrétaire)
+from math import ceil
+
 @app.route('/admin')
 def admin():
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
@@ -58,12 +60,10 @@ def admin():
 
         # Pagination pour les enseignants
         page_enseignants = request.args.get('page_enseignants', 1, type=int)
-        #cursor.execute('SELECT COUNT(*) AS total FROM Utilisateur WHERE type_utilisateur = secretaire')
         cursor.execute('SELECT COUNT(*) AS total FROM Enseignant')
         total_enseignants = cursor.fetchone()['total']
         total_pages_enseignants = ceil(total_enseignants / per_page)
         offset_enseignants = (page_enseignants - 1) * per_page
-        #cursor.execute('SELECT * FROM Utilisateur WHERE type_utilisateur = secretaire LIMIT %s OFFSET %s', (per_page, offset_enseignants))
         cursor.execute('SELECT * FROM Enseignant LIMIT %s OFFSET %s', (per_page, offset_enseignants))
         enseignants = cursor.fetchall()
 
@@ -76,43 +76,106 @@ def admin():
         cursor.execute('SELECT * FROM CoursSemestriel LIMIT %s OFFSET %s', (per_page, offset_cours_semestriels))
         cours_semestriels = cursor.fetchall()
 
+        # Récupérer les messages de contact
+        cursor.execute('SELECT * FROM Contact ORDER BY date_contact DESC')
+        messages = cursor.fetchall()
+
         cursor.close()
 
         return render_template(
             'admin.html',
             cours=cours, page_cours=page_cours, total_pages_cours=total_pages_cours,
             enseignants=enseignants, page_enseignants=page_enseignants, total_pages_enseignants=total_pages_enseignants,
-            cours_semestriels=cours_semestriels, page_cours_semestriels=page_cours_semestriels, total_pages_cours_semestriels=total_pages_cours_semestriels
+            cours_semestriels=cours_semestriels, page_cours_semestriels=page_cours_semestriels, total_pages_cours_semestriels=total_pages_cours_semestriels,
+            messages=messages  # Passer les messages de contact au template
         )
     else:
         return redirect(url_for('login'))
 
 
-# Page enseignant
 @app.route('/teacher')
 def teacher():
     if 'loggedin' in session and session['type_utilisateur'] == 'enseignant':
-        cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM Seance WHERE id_enseignant = %s', (session['id'],))
-        seances = cursor.fetchall()
-        cursor.execute('SELECT * FROM Note WHERE id_enseignant = %s', (session['id'],))
-        notes = cursor.fetchall()
-        return render_template('teacher.html', seances=seances, notes=notes)
+        try:
+            # Connexion à la base de données
+            cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
+
+            # Sélectionner les séances associées à l'enseignant
+            cursor.execute('SELECT * FROM Seance WHERE id_enseignant = %s', (session['id'],))
+            seances = cursor.fetchall()
+
+            # Sélectionner les notes associées à l'enseignant avec une jointure sur CoursSemestriel
+            cursor.execute('''
+                SELECT n.* 
+                FROM Note n
+                JOIN CoursSemestriel cs ON n.id_cours_semestriel = cs.id
+                WHERE cs.id_enseignant = %s
+                LIMIT 0, 25
+            ''', (session['id'],))
+            notes = cursor.fetchall()
+
+            # Rendre la page teacher.html avec les séances et notes
+            return render_template('teacher.html', seances=seances, notes=notes)
+
+        except Exception as e:
+            print("Error occurred: ", e)
+            return render_template('error.html',
+                                   error_message="Une erreur est survenue lors de la récupération des données.")
+
+    # Si l'utilisateur n'est pas connecté ou n'est pas un enseignant, redirection vers la page de login
     else:
         return redirect(url_for('login'))
+
+
+
 
 # Page étudiant
 @app.route('/student')
 def student():
     if 'loggedin' in session and session['type_utilisateur'] == 'eleve':
         cursor = mysql.connection.cursor(MySQLdb.cursors.DictCursor)
-        cursor.execute('SELECT * FROM Inscription WHERE id_eleve = %s', (session['id'],))
+
+        # Récupérer les infos de l'étudiant
+        cursor.execute('''
+            SELECT nom, prenom FROM Utilisateur WHERE id = %s
+        ''', (session['id'],))
+        etudiant = cursor.fetchone()
+
+        # Récupérer les inscriptions avec les détails du cours et de l'enseignant
+        cursor.execute('''
+            SELECT Cours.titre, Utilisateur.nom AS nom_enseignant, Utilisateur.prenom AS prenom_enseignant, Inscription.date_inscription
+            FROM Inscription
+            JOIN CoursSemestriel ON Inscription.id_cours_semestriel = CoursSemestriel.id
+            JOIN Cours ON CoursSemestriel.id_cours = Cours.id
+            JOIN Enseignant ON CoursSemestriel.id_enseignant = Enseignant.id
+            JOIN Utilisateur ON Enseignant.id = Utilisateur.id
+            WHERE Inscription.id_eleve = %s
+        ''', (session['id'],))
         inscriptions = cursor.fetchall()
-        cursor.execute('SELECT * FROM Note WHERE id_eleve = %s', (session['id'],))
+
+        # Récupérer les notes avec le titre du cours
+        cursor.execute('''
+            SELECT Cours.titre, Note.note, Note.explication
+            FROM Note
+            JOIN CoursSemestriel ON Note.id_cours_semestriel = CoursSemestriel.id
+            JOIN Cours ON CoursSemestriel.id_cours = Cours.id
+            WHERE Note.id_eleve = %s
+        ''', (session['id'],))
         notes = cursor.fetchall()
-        return render_template('student.html', inscriptions=inscriptions, notes=notes)
-    else:
-        return redirect(url_for('login'))
+
+        # Calculer la moyenne de l'élève
+        cursor.execute('''
+            SELECT AVG(note) AS moyenne FROM Note WHERE id_eleve = %s
+        ''', (session['id'],))
+        moyenne_result = cursor.fetchone()
+        moyenne = moyenne_result['moyenne'] if moyenne_result and moyenne_result[
+            'moyenne'] is not None else 'Non disponible'
+
+        return render_template('student.html', etudiant=etudiant, inscriptions=inscriptions, notes=notes,
+                               moyenne=moyenne)
+
+    return redirect(url_for('login'))
+
 
 # Route pour ajouter un cours
 @app.route('/add_cours', methods=['POST'])
@@ -167,6 +230,62 @@ def add_cours_semestriel():
         cursor.close()
         flash('Cours semestriel ajouté avec succès', 'success')
     return redirect(url_for('admin'))
+
+from flask import jsonify
+
+
+@app.route('/contact', methods=['POST'])
+def contact():
+    if request.method == 'POST':
+        nom = request.form['nom']
+        prenom = request.form['prenom']
+        email = request.form['email']
+        message = request.form['message']
+
+        # Connexion à la base de données
+        cursor = mysql.connection.cursor()
+        cursor.execute('''
+            INSERT INTO Contact (nom, prenom, email, message)
+            VALUES (%s, %s, %s, %s)
+        ''', (nom, prenom, email, message))
+
+        # Valider la transaction
+        mysql.connection.commit()
+        cursor.close()
+
+        # Message de succès
+        flash('Votre message a été envoyé avec succès !', 'success')
+
+        # Rediriger vers la même page
+        return redirect(request.referrer)
+
+@app.route('/delete_contact/<int:id>', methods=['GET'])
+def delete_contact(id):
+    if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
+        cursor = mysql.connection.cursor()
+        cursor.execute('DELETE FROM Contact WHERE id = %s', (id,))
+        mysql.connection.commit()
+        cursor.close()
+        flash('Le message a été supprimé avec succès !', 'success')
+    return redirect(url_for('admin'))
+
+
+@app.route('/edit_note/<int:note_id>', methods=['POST'])
+def edit_note(note_id):
+    note = get_note_by_id(note_id)  # Remplacez cela par votre logique pour récupérer la note
+    if note:
+        # Récupérer les données du formulaire
+        note_value = request.form.get('note')
+        explication_value = request.form.get('explication')
+
+        # Logique pour enregistrer la modification
+        update_note(note_id, note_value, explication_value)  # Remplacez par votre logique de mise à jour
+
+        return redirect(url_for('index'))  # Redirigez vers la page d'accueil ou une autre page appropriée
+    else:
+        return "Note introuvable", 404
+
+
 
 # Déconnexion
 @app.route('/logout')

@@ -1,68 +1,132 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="container mt-4">
-    <h2 class="mb-4">Interface Enseignant</h2>
-
-    <!-- Section Séances -->
-    <div class="card mb-4">
-        <div class="card-header bg-secondary text-white">
-            <h5 class="card-title mb-0">Mes Séances</h5>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Cours</th>
-                        <th>Durée</th>
-                        <th>Description</th>
-                        <th>Salle</th>
-                        <th>Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for seance in seances %}
-                    <tr>
-                        <td>{{ seance.id }}</td>
-                        <td>{{ seance.id_cours_semestriel }}</td>
-                        <td>{{ seance.duree }}</td>
-                        <td>{{ seance.description }}</td>
-                        <td>{{ seance.salle }}</td>
-                        <td>{{ seance.date_seance }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <h2 class="mb-4 text-center">Interface Enseignant</h2>
 
     <!-- Section Notes -->
-    <div class="card mb-4">
-        <div class="card-header bg-dark text-white">
-            <h5 class="card-title mb-0">Notes des Étudiants</h5>
+    <div class="card shadow mb-4">
+        <div class="card-header bg-success text-white">
+            <h5 class="card-title mb-0">Notes des Étudiants ({{ notes|length }})</h5>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>ID Étudiant</th>
-                        <th>ID Cours</th>
-                        <th>Note</th>
-                        <th>Explication</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for note in notes %}
-                    <tr>
-                        <td>{{ note.id_eleve }}</td>
-                        <td>{{ note.id_cours_semestriel }}</td>
-                        <td>{{ note.note }}</td>
-                        <td>{{ note.explication }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            {% if notes %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th scope="col">ID Étudiant</th>
+                            <th scope="col">ID Cours</th>
+                            <th scope="col">Note</th>
+                            <th scope="col">Explication</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for note in notes %}
+                        <tr>
+                            <td>{{ note.id_eleve }}</td>
+                            <td>{{ note.id_cours_semestriel }}</td>
+                            <td>{{ note.note }}</td>
+                            <td>{{ note.explication }}</td>
+                            <td>
+                                <!-- Bouton pour ouvrir le modal -->
+                                <button class="btn btn-warning btn-sm" data-toggle="modal" data-target="#editNoteModal"
+                                        data-note-id="{{ note.id }}" data-note="{{ note.note }}"
+                                        data-explication="{{ note.explication }}">
+                                    Modifier
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-info" role="alert">
+                Aucune note n'a été attribuée.
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>
+
+<!-- Modal pour modifier une note -->
+<div class="modal fade" id="editNoteModal" tabindex="-1" role="dialog" aria-labelledby="editNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editNoteModalLabel">Modifier la note</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="editNoteForm" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" id="noteId" name="noteId">
+                    <div class="form-group">
+                        <label for="note">Note</label>
+                        <input type="number" class="form-control" id="note" name="note" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="explication">Explication</label>
+                        <textarea class="form-control" id="explication" name="explication" rows="3" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+                    <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Lorsque le modal s'ouvre, remplir les champs du formulaire avec les données de la note
+    $('#editNoteModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget); // Le bouton qui a ouvert le modal
+        var noteId = button.data('note-id');
+        var note = button.data('note');
+        var explication = button.data('explication');
+
+        // Remplir les champs du formulaire avec les valeurs
+        var modal = $(this);
+        modal.find('#note').val(note);
+        modal.find('#explication').val(explication);
+        modal.find('#noteId').val(noteId);
+    });
+
+    // Soumettre le formulaire de modification via AJAX
+    $('#editNoteForm').on('submit', function(e) {
+        e.preventDefault(); // Empêcher la soumission classique du formulaire
+
+        var noteId = $('#noteId').val();
+        var note = $('#note').val();
+        var explication = $('#explication').val();
+
+        // Assurez-vous que les données sont envoyées correctement
+        $.ajax({
+            url: '/edit_note/' + noteId, // Chemin de l'URL pour la modification de la note
+            type: 'POST',
+            data: {
+                note: note,
+                explication: explication,
+                csrf_token: '{{ csrf_token() }}'  // Assurez-vous que le token CSRF est inclus (si nécessaire)
+            },
+            success: function(response) {
+                // Fermer le modal après succès
+                $('#editNoteModal').modal('hide');
+                // Rafraîchir la page pour afficher les modifications
+                location.reload();
+            },
+            error: function(xhr, status, error) {
+                alert("Erreur lors de la modification de la note.");
+            }
+        });
+    });
+</script>
 {% endblock %}
