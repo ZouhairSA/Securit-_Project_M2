@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, f
 import os
 
 app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'votre_clé_secrète')
+app.secret_key = os.getenv('SECRET_KEY', '12Zouhair25Sabyoud@INSTA25ZohaiR')
 
 # Données simulées (remplace la base de données)
 # Utilisateurs (simule la table Utilisateur)
