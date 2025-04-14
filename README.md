@@ -64,7 +64,7 @@ Ce projet vise à :
 
 ## 🔐 Sécurité Intégrée
 
-✅ Utilisation de requêtes **préparées**  
+✅ Utilisatio de requêtes **préparées**  
 ✅ Validation des **entrées utilisateur**  
 ✅ Chiffrement du mot de passe dans la base  
 ✅ Tests avec **SQLMap** pour détecter les injections SQL  
