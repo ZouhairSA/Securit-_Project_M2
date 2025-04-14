@@ -29,36 +29,36 @@ Ce projet vise à :
 
 ## 🛠️ Technologies Utilisées
 
-| Composant          | Description |
-|--------------------|-------------|
-| Python             | Langage principal |
-| Flask              | Framework web léger |
-| MySQL              | Base de données relationnelle |
-| Flask-MySQLdb      | Connexion Flask ↔ MySQL |
-| HTML / CSS / Bootstrap | Interfaces utilisateurs |
+| Composant          | Description                        |
+|--------------------|------------------------------------|
+| Python             | Langage principal                 |
+| Flask              | Framework web léger               |
+| MySQL              | Base de données relationnelle     |
+| Flask-MySQLdb      | Connexion Flask ↔ MySQL           |
+| HTML / CSS / Bootstrap | Interfaces utilisateurs       |
 | SQLMap             | Tests de sécurité contre les injections SQL |
 | XAMPP              | Environnement serveur local (Apache + MySQL) |
-| GitHub             | Versionnage de code |
-| Kali Linux         | Outils de test d’intrusion |
+| GitHub             | Versionnage de code               |
+| Kali Linux         | Outils de test d’intrusion        |
 
 ---
 
 ## 🧑‍🏫 Rôles Utilisateurs
 
 - **👩‍💼 Secrétaire (Administrateur)** :
-    - Créer, modifier, supprimer des cours
-    - Gérer les enseignants
-    - Visualiser les inscriptions et messages
+  - Créer, modifier, supprimer des cours
+  - Gérer les enseignants
+  - Visualiser les inscriptions et messages
 
 - **👨‍🏫 Enseignant** :
-    - Planifier des séances
-    - Noter les étudiants
-    - Répondre aux questions
+  - Planifier des séances
+  - Noter les étudiants
+  - Répondre aux questions
 
 - **👨‍🎓 Étudiant** :
-    - S’inscrire à des cours
-    - Déposer des exercices
-    - Poser des questions
+  - S’inscrire à des cours
+  - Déposer des exercices
+  - Poser des questions
 
 ---
 
@@ -71,15 +71,3 @@ Ce projet vise à :
 ✅ Gestion des **rôles MySQL** avec privilèges limités
 
 ---
-
-## 🖼️ Captures d’écran
-
-- Tableau de bord dynamique
-- Interfaces personnalisées selon le rôle
-- Gestion des cours et utilisateurs
-- Messages de contact, inscription, exercices...
-
----
-
-## ⚙️ Structure du Projet
-
