@@ -41,7 +41,6 @@ inscriptions = [
     {'id': 1, 'id_eleve': 3, 'id_cours': 1},
 ]
 
-# Routes (same as before, but using in-memory data)
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
