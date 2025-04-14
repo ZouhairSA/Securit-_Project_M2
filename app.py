@@ -6,14 +6,12 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', '12Zouhair25Sabyoud@INSTA25ZohaiR')
 
 # Données simulées (remplace la base de données)
-# Utilisateurs (simule la table Utilisateur)
 utilisateurs = [
     {'id': 1, 'nom': 'Sabyoud', 'prenom': 'Zohair', 'email': 'zohair@gmail.com', 'mot_de_passe': 'password123', 'type_utilisateur': 'secretaire'},
     {'id': 2, 'nom': 'Boussif', 'prenom': 'Youssef', 'email': 'youssef.boussif@gmail.com', 'mot_de_passe': 'password123', 'type_utilisateur': 'enseignant'},
     {'id': 3, 'nom': 'AA', 'prenom': 'Fatima', 'email': 'fatima.aitbenhassi@gmail.com', 'mot_de_passe': 'password123', 'type_utilisateur': 'eleve'},
 ]
 
-# Cours (simule la table Cours)
 cours = [
     {'id': 1, 'titre': 'Mathématiques', 'description': 'Cours de mathématiques pour le semestre 1', 'heures': 30, 'type_cours': 'CM'},
     {'id': 2, 'titre': 'Physique', 'description': 'Cours de physique pour le semestre 1', 'heures': 20, 'type_cours': 'TD'},
@@ -22,33 +20,28 @@ cours = [
     {'id': 5, 'titre': 'Biologie', 'description': 'Cours de biologie générale', 'heures': 30, 'type_cours': 'CM'},
 ]
 
-# Enseignants (simule la table Enseignant)
 enseignants = [
     {'id': 1, 'nom': 'Boussif', 'prenom': 'Youssef', 'fonction': 'Professeur', 'telephone': '0123456789'},
 ]
 
-# Cours semestriels (simule la table CoursSemestriel)
 cours_semestriels = [
     {'id': 1, 'id_cours': 1, 'id_enseignant': 1, 'semestre': 1, 'annee': 2025},
     {'id': 2, 'id_cours': 2, 'id_enseignant': 1, 'semestre': 1, 'annee': 2025},
 ]
 
-# Séances (simule la table Seance pour les enseignants)
 seances = [
     {'id': 1, 'id_enseignant': 2, 'description': 'Séance de TD en Physique', 'date': '2025-04-15'},
 ]
 
-# Notes (simule la table Note pour enseignants et étudiants)
 notes = [
     {'id': 1, 'id_enseignant': 2, 'id_eleve': 3, 'valeur': 15},
 ]
 
-# Inscriptions (simule la table Inscription pour les étudiants)
 inscriptions = [
     {'id': 1, 'id_eleve': 3, 'id_cours': 1},
 ]
 
-# Route pour la page de connexion
+# Routes (same as before, but using in-memory data)
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -69,11 +62,9 @@ def login():
             flash('Email ou mot de passe incorrect', 'danger')
     return render_template('login.html')
 
-# Interface Secrétaire (Admin)
 @app.route('/admin')
 def admin():
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
-        # Pagination pour les cours
         page_cours = request.args.get('page_cours', 1, type=int)
         per_page = 5
         total_cours = len(cours)
@@ -81,14 +72,12 @@ def admin():
         offset_cours = (page_cours - 1) * per_page
         cours_paginated = cours[offset_cours:offset_cours + per_page]
 
-        # Pagination pour les enseignants
         page_enseignants = request.args.get('page_enseignants', 1, type=int)
         total_enseignants = len(enseignants)
         total_pages_enseignants = ceil(total_enseignants / per_page)
         offset_enseignants = (page_enseignants - 1) * per_page
         enseignants_paginated = enseignants[offset_enseignants:offset_enseignants + per_page]
 
-        # Pagination pour les cours semestriels
         page_cours_semestriels = request.args.get('page_cours_semestriels', 1, type=int)
         total_cours_semestriels = len(cours_semestriels)
         total_pages_cours_semestriels = ceil(total_cours_semestriels / per_page)
@@ -103,7 +92,6 @@ def admin():
         )
     return redirect(url_for('login'))
 
-# Interface Enseignant
 @app.route('/teacher')
 def teacher():
     if 'loggedin' in session and session['type_utilisateur'] == 'enseignant':
@@ -112,7 +100,6 @@ def teacher():
         return render_template('teacher.html', seances=user_seances, notes=user_notes)
     return redirect(url_for('login'))
 
-# Interface Étudiant
 @app.route('/student')
 def student():
     if 'loggedin' in session and session['type_utilisateur'] == 'eleve':
@@ -121,7 +108,6 @@ def student():
         return render_template('student.html', inscriptions=user_inscriptions, notes=user_notes)
     return redirect(url_for('login'))
 
-# Ajouter un cours
 @app.route('/add_cours', methods=['POST'])
 def add_cours():
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
@@ -134,7 +120,6 @@ def add_cours():
         flash('Cours ajouté avec succès', 'success')
     return redirect(url_for('admin'))
 
-# Ajouter un enseignant
 @app.route('/add_enseignant', methods=['POST'])
 def add_enseignant():
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
@@ -147,7 +132,6 @@ def add_enseignant():
         flash('Enseignant ajouté avec succès', 'success')
     return redirect(url_for('admin'))
 
-# Supprimer un cours
 @app.route('/delete_cours/<int:id>', methods=['GET'])
 def delete_cours(id):
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
@@ -156,7 +140,6 @@ def delete_cours(id):
         flash('Cours supprimé avec succès', 'success')
     return redirect(url_for('admin'))
 
-# Ajouter un cours semestriel
 @app.route('/add_cours_semestriel', methods=['POST'])
 def add_cours_semestriel():
     if 'loggedin' in session and session['type_utilisateur'] == 'secretaire':
@@ -169,7 +152,6 @@ def add_cours_semestriel():
         flash('Cours semestriel ajouté avec succès', 'success')
     return redirect(url_for('admin'))
 
-# Déconnexion
 @app.route('/logout')
 def logout():
     session.pop('loggedin', None)
